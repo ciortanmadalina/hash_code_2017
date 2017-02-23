@@ -14,8 +14,8 @@ class videoRequest:
     videoID = -1
     requestCount = 0
     def __init__(self,a,b,c):
-        self.endPoint = a
-        self.videoID = b
+        self.endPoint = b
+        self.videoID = a
         self.requestCount = c
 
 
