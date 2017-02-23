@@ -58,8 +58,8 @@ def loadInputFile(fileName):
 
 
 
+loadInputFile('me_at_the_zoo.in')
+#loadInputFile('kittens.in')
 
-loadInputFile('kittens.in')
 
-print('blah')
 
