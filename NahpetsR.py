@@ -1,11 +1,21 @@
-
-
 numVids = 0
 numRequestDesc = 0
 cacheCount = 0
 cacheSize = 0
-endpointCaches = []
-endPointLatencies = []
+endPointCaches = {}
+endPointLatencies = {}
+requestDescriptions = {}
+
+class videoRequest:
+    endPoint = -1
+    videoID = -1
+    requestCount = 0
+    def __init__(self,a,b,c):
+        endPoint = a
+        videoID = b
+        requestCount = c
+
+
 
 def loadInputFile(fileName):
     f = open(fileName, 'r')
@@ -13,28 +23,43 @@ def loadInputFile(fileName):
     line = f.readline()
     opts  =line.split(' ')
 
-    numVids = opts[0]
-    numEndPoints = opts[1]
-    numRequestDesc = opts[2]
-    cacheCount = opts[3]
-    cacheSize = opts[4]
+    numVids = int(opts[0])
+    numEndPoints = int(opts[1])
+    numRequestDesc = int(opts[2])
+    cacheCount = int(opts[3])
+    cacheSize = int(opts[4])
 
-    videos = []
+    #videos = []
 
     line = f.readline()
     videoSizes = line.split(' ')
 
-    for endPointNum in range(int(numEndPoints)):
+    endPointLatencies = {}#[int(numEndPoints)]
+    for endPointNum in range(numEndPoints):
         line = f.readline()
         opts = line.split(' ')
         endPointLatencies[endPointNum] = opts[0]
-        endpointCaches[endPointNum] = []
-        for curCacheNum in range(opts[1]):
+        endPointCaches[endPointNum] = {} #int(opts[1])]
+        for curCacheNum in range(int(opts[1])):
             line = f.readline()
-            #endPointCaches[endPointNum][]
+            lat = line.split(' ')
+            endPointCaches[endPointNum][lat[0]] = lat[1]
+
+    requestDescriptions = {}
+    for requestNum in range(numRequestDesc):
+        print(requestNum)
+        line = f.readline()
+        x = line.split(' ')
+
+        vr = videoRequest(int(x[0]), int(x[1]), int(x[2]))
+
+        requestDescriptions[vr.endPoint] = vr
+
+
 
 
 
 loadInputFile('kittens.in')
 
+print('blah')
 
