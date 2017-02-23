@@ -1,4 +1,5 @@
 numVids = 0
+numVids = 0
 numRequestDesc = 0
 cacheCount = 0
 cacheSize = 0
@@ -7,6 +8,64 @@ endPointDatacenterLatencies = {}
 requestDescriptions = {}
 videosByCaches ={}
 videoSizes =[]
+
+
+class endPointVolume:
+    endpoint = 0
+    video = 0
+    requests = 0
+    volume = 0
+
+
+def assignByEndpointVolume():
+    endpointVolumes = []
+    global numVids
+    global numRequestDesc
+    global cacheCount
+    global cacheSize
+    global endPointCacheLantencies
+    global endPointDatacenterLatencies
+    global requestDescriptions
+    global videosByCaches
+    global videoSizes
+
+    for endpidx in requestDescriptions:
+
+        for videoID in requestDescriptions[endpidx]:
+            vr = requestDescriptions[endpidx][videoID]
+            videoVolume = int(videoSizes[vr.videoID]) * vr.requestCount
+
+            epv = endPointVolume()
+            epv.endpoint = vr.endPoint
+            epv.video = vr.videoID
+            epv.requests = vr.requestCount
+            epv.volume = videoVolume
+
+            endpointVolumes.append(epv)
+
+    # now sort by endPointVolume
+
+    endpointVolumes = sorted(endpointVolumes, key=lambda epv:epv.volume, reverse=True)
+
+    #print(endpointVolumes)
+    # this is a list of request count * file size, per endpoint
+    # assign each video to the best cache, if one is available, assuming the video isn't already present in the best one
+
+    for i in range (cacheCount):
+        videosByCaches[i] = {}
+        videosByCaches[i]['availableSpace'] = cacheSize
+        videosByCaches[i]['videos'] = []
+
+    for epv in endpointVolumes:
+        videoSize = int(videoSizes[epv.video])
+        #try to stick the video in the best available cache
+        for cacheID in endPointCacheLantencies:
+            if videosByCaches[cacheID]['availableSpace'] >= videoSize:
+                videosByCaches[cacheID]['videos'].append(epv.video)
+                videosByCaches[cacheID]['availableSpace'] -= videoSize
+                break;
+
+
 
 
 class videoRequest:
@@ -62,7 +121,7 @@ def loadInputFile(fileName):
 
     requestDescriptions = {}
     for requestNum in range(numRequestDesc):
-        print(requestNum)
+        #print(requestNum)
         line = f.readline()
         x = line.split(' ')
 
@@ -91,7 +150,7 @@ def loadVideosByCache1():
                 break;
 
 
-    print('videosByCaches end ', videosByCaches)
+    #print('videosByCaches end ', videosByCaches)
 
 
 
@@ -136,30 +195,32 @@ def score():
 
             for cacheID in endPointCacheLantencies[endp]:
                 if videoID in videosByCaches[int(cacheID)]["videos"]:
-                    print(endPointCacheLantencies[endp][cacheID])
+                    #print(endPointCacheLantencies[endp][cacheID])
                     if latDC - int(endPointCacheLantencies[endp][cacheID]) > bestCacheLat:
                         bestCacheLat = latDC - endPointCacheLantencies[endp][cacheID]
 
             totalEP += vr.requestCount * bestCacheLat
 
         total += totalEP
-        print("temp total:" , total , " EP:" ,totalEP)
+        #print("temp total:" , total , " EP:" ,totalEP)
     print("done:" ,total)
-    writeToFile(total, videosByCaches)
+    #writeToFile(total, videosByCaches)
 
 
 
 
 
 
-#loadInputFile('me_at_the_zoo.in')
-loadInputFile('kittens.in')
+loadInputFile('me_at_the_zoo.in')
+#loadInputFile('kittens.in')
 
 #loadInputFile('short.in')
 
-print("endPointCaches :", endPointCacheLantencies)
+#print("endPointCaches :", endPointCacheLantencies)
 
 loadVideosByCache1()
 
 score()
 
+assignByEndpointVolume()
+score()
