@@ -153,9 +153,9 @@ def score():
 
 
 #loadInputFile('me_at_the_zoo.in')
-#loadInputFile('kittens.in')
+loadInputFile('kittens.in')
 
-loadInputFile('short.in')
+#loadInputFile('short.in')
 
 print("endPointCaches :", endPointCacheLantencies)
 
