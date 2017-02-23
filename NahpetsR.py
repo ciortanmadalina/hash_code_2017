@@ -14,8 +14,8 @@ class videoRequest:
     videoID = -1
     requestCount = 0
     def __init__(self,a,b,c):
-        self.endPoint = a
-        self.videoID = b
+        self.endPoint = b
+        self.videoID = a
         self.requestCount = c
 
 
@@ -94,6 +94,27 @@ def loadVideosByCache1():
     print('videosByCaches end ', videosByCaches)
 
 
+
+def writeToFile(score, videosByCaches) :
+    cachesUsed = 0
+    for cacheId in videosByCaches:
+        if len(videosByCaches[cacheId]['videos']) > 0 :
+            cachesUsed += 1
+
+    outputFile = open('output', 'w')
+    outputFile.write(str(cachesUsed))
+    outputFile.write("\n")
+    for cacheId in videosByCaches:
+        if len(videosByCaches[cacheId]['videos']) > 0 :
+            outputFile.write(str(cacheId))
+            outputFile.write(' ')
+            outputFile.write(' '.join(map( str, videosByCaches[cacheId]['videos'])))
+            #outputFile.write(' '.join(videosByCaches[cacheId]['videos']))
+            outputFile.write("\n")
+
+    outputFile.close()
+
+
 def score():
     global numVids
     global numRequestDesc
@@ -114,17 +135,19 @@ def score():
             bestCacheLat = 0
 
             for cacheID in endPointCacheLantencies[endp]:
-                #print( videosByCaches[int(cacheID)] )
                 if videoID in videosByCaches[int(cacheID)]["videos"]:
-                    print(endPointCacheLantencies[endp][int(cacheID)])
-                    if latDC - int(endPointCacheLantencies[endp][int(cacheID)]) > bestCacheLat:
-                        bestCacheLat = latDC - endPointCacheLantencies[endp][int(cacheID)]
+                    print(endPointCacheLantencies[endp][cacheID])
+                    if latDC - int(endPointCacheLantencies[endp][cacheID]) > bestCacheLat:
+                        bestCacheLat = latDC - endPointCacheLantencies[endp][cacheID]
 
             totalEP += vr.requestCount * bestCacheLat
 
         total += totalEP
-        print("temp total:" + total + " EP:" + totalEP)
-    print("done:" + total)
+        print("temp total:" , total , " EP:" ,totalEP)
+    print("done:" ,total)
+    writeToFile(total, videosByCaches)
+
+
 
 
 
