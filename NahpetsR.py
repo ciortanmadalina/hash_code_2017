@@ -59,10 +59,16 @@ def assignByEndpointVolume():
     for epv in endpointVolumes:
         videoSize = int(videoSizes[epv.video])
         #try to stick the video in the best available cache
-        for cacheID in endPointCacheLantencies:
-            if videosByCaches[cacheID]['availableSpace'] >= videoSize:
-                videosByCaches[cacheID]['videos'].append(epv.video)
-                videosByCaches[cacheID]['availableSpace'] -= videoSize
+
+
+
+
+        for cacheID in endPointCacheLantencies[epv.endpoint]:
+            if ( epv.video in videosByCaches[int(cacheID)]['videos'] ):
+                continue; # don't put the video if it's already in there ;-)
+            if videosByCaches[int(cacheID)]['availableSpace'] >= videoSize:
+                videosByCaches[int(cacheID)]['videos'].append(epv.video)
+                videosByCaches[int(cacheID)]['availableSpace'] -= videoSize
                 break;
 
 
@@ -199,6 +205,8 @@ def score():
                     if latDC - int(endPointCacheLantencies[endp][cacheID]) > bestCacheLat:
                         bestCacheLat = latDC - endPointCacheLantencies[endp][cacheID]
 
+            if bestCacheLat < 0:
+                bestCacheLat = 0 #if one cache server has worse latency than datacenter
             totalEP += vr.requestCount * bestCacheLat
 
         total += totalEP
@@ -224,3 +232,5 @@ score()
 
 assignByEndpointVolume()
 score()
+
+print(videosByCaches)
