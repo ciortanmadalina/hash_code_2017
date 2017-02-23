@@ -94,6 +94,27 @@ def loadVideosByCache1():
     print('videosByCaches end ', videosByCaches)
 
 
+
+def writeToFile(score, videosByCaches) :
+    cachesUsed = 0
+    for cacheId in videosByCaches:
+        if len(videosByCaches[cacheId]['videos']) > 0 :
+            cachesUsed += 1
+
+    outputFile = open('output', 'w')
+    outputFile.write(str(cachesUsed))
+    outputFile.write("\n")
+    for cacheId in videosByCaches:
+        if len(videosByCaches[cacheId]['videos']) > 0 :
+            outputFile.write(str(cacheId))
+            outputFile.write(' ')
+            outputFile.write(' '.join(map( str, videosByCaches[cacheId]['videos'])))
+            #outputFile.write(' '.join(videosByCaches[cacheId]['videos']))
+            outputFile.write("\n")
+
+    outputFile.close()
+
+
 def score():
     global numVids
     global numRequestDesc
@@ -114,26 +135,27 @@ def score():
             bestCacheLat = 0
 
             for cacheID in endPointCacheLantencies[endp]:
-                #print( videosByCaches[int(cacheID)] )
                 if videoID in videosByCaches[int(cacheID)]["videos"]:
-                    print(endPointCacheLantencies[endp][int(cacheID)])
-                    if latDC - int(endPointCacheLantencies[endp][int(cacheID)]) > bestCacheLat:
-                        bestCacheLat = latDC - endPointCacheLantencies[endp][int(cacheID)]
+                    print(endPointCacheLantencies[endp][cacheID])
+                    if latDC - int(endPointCacheLantencies[endp][cacheID]) > bestCacheLat:
+                        bestCacheLat = latDC - endPointCacheLantencies[endp][cacheID]
 
             totalEP += vr.requestCount * bestCacheLat
 
         total += totalEP
-        print("temp total:" + total + " EP:" + totalEP)
-    print("done:" + total)
+        print("temp total:" , total , " EP:" ,totalEP)
+    print("done:" ,total)
+    writeToFile(total, videosByCaches)
+
+
 
 
 
 
 #loadInputFile('me_at_the_zoo.in')
-#loadInputFile('kittens.in')
+loadInputFile('kittens.in')
 
-loadInputFile('short.in')
-print('! video size', videoSizes)
+#loadInputFile('short.in')
 
 print("endPointCaches :", endPointCacheLantencies)
 
