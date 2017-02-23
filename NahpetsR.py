@@ -99,7 +99,6 @@ def loadVideosByCache1():
 #loadInputFile('kittens.in')
 
 loadInputFile('short.in')
-print('! video size', videoSizes)
 
 print("endPointCaches :", endPointCaches)
 
