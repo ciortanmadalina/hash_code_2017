@@ -59,7 +59,7 @@ def loadInputFile(fileName):
 
 
 
-loadInputFile('kittens.in')
+loadInputFile('short.in')
 
 print('blah')
 
