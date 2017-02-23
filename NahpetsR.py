@@ -53,7 +53,7 @@ def loadInputFile(fileName):
 
         vr = videoRequest(int(x[0]), int(x[1]), int(x[2]))
 
-        requestDescriptions[vr.endPoint] = vr
+        requestDescriptions[vr.endPoint][vr.videoID] = vr
 
 
 
