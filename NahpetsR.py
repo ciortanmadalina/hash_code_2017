@@ -1,3 +1,5 @@
+import operator
+
 numVids = 0
 numVids = 0
 numRequestDesc = 0
@@ -15,6 +17,28 @@ class endPointVolume:
     video = 0
     requests = 0
     volume = 0
+
+def initVars():
+    global numVids
+    global numRequestDesc
+    global cacheCount
+    global cacheSize
+    global endPointCacheLantencies
+    global endPointDatacenterLatencies
+    global requestDescriptions
+    global videosByCaches
+    global videoSizes
+
+    numVids = 0
+    numVids = 0
+    numRequestDesc = 0
+    cacheCount = 0
+    cacheSize = 0
+    endPointCacheLantencies = {}
+    endPointDatacenterLatencies = {}
+    requestDescriptions = {}
+    videosByCaches ={}
+    videoSizes =[]
 
 
 def assignByEndpointVolume():
@@ -60,13 +84,16 @@ def assignByEndpointVolume():
         videoSize = int(videoSizes[epv.video])
         #try to stick the video in the best available cache
 
+        sortedLatencyCacheIndex = sorted(endPointCacheLantencies[epv.endpoint].keys(), key=lambda epclkey:endPointCacheLantencies[epv.endpoint][epclkey]  )
 
 
 
-        for cacheID in endPointCacheLantencies[epv.endpoint]:
+        for cacheID in sortedLatencyCacheIndex:
             if ( epv.video in videosByCaches[int(cacheID)]['videos'] ):
-                continue; # don't put the video if it's already in there ;-)
+                break; # don't put the video if it's already in there ;-)
             if videosByCaches[int(cacheID)]['availableSpace'] >= videoSize:
+                # found a place to put the video, maybe check if it's already not too far
+
                 videosByCaches[int(cacheID)]['videos'].append(epv.video)
                 videosByCaches[int(cacheID)]['availableSpace'] -= videoSize
                 break;
@@ -160,13 +187,13 @@ def loadVideosByCache1():
 
 
 
-def writeToFile(score, videosByCaches) :
+def writeToFile(score, videosByCaches, fileName) :
     cachesUsed = 0
     for cacheId in videosByCaches:
         if len(videosByCaches[cacheId]['videos']) > 0 :
             cachesUsed += 1
 
-    outputFile = open('output', 'w')
+    outputFile = open(fileName + '.out', 'w')
     outputFile.write(str(cachesUsed))
     outputFile.write("\n")
     for cacheId in videosByCaches:
@@ -180,7 +207,7 @@ def writeToFile(score, videosByCaches) :
     outputFile.close()
 
 
-def score():
+def score(fileName):
     global numVids
     global numRequestDesc
     global cacheCount
@@ -212,25 +239,34 @@ def score():
         total += totalEP
         #print("temp total:" , total , " EP:" ,totalEP)
     print("done:" ,total)
-    #writeToFile(total, videosByCaches)
+    writeToFile(total, videosByCaches, fileName)
 
 
 
 
 
 
-loadInputFile('me_at_the_zoo.in')
-#loadInputFile('kittens.in')
+#loadInputFile('me_at_the_zoo.in') #17439038
+#loadInputFile('kittens.in') # 535877848672
+#loadInputFile('trending_today.in') #238174174000
+#loadInputFile('videos_worth_spreading.in') #20626135655
 
-#loadInputFile('short.in')
+
+
 
 #print("endPointCaches :", endPointCacheLantencies)
 
-loadVideosByCache1()
+#loadVideosByCache1()
+#score()
 
-score()
+fileNames = ['me_at_the_zoo.in','videos_worth_spreading.in','trending_today.in','kittens.in']
 
-assignByEndpointVolume()
-score()
+for fileName in fileNames:
+    initVars()
+    loadInputFile(fileName)
+    assignByEndpointVolume()
+    score(fileName)
+
+print("finished")
 
 print(videosByCaches)
